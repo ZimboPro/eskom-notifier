@@ -6,8 +6,14 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-eframe = "0.19.0"
-cron = "0.9.0"
-chrono = "0.4.19"
 eskom_se_push-api = { version ="0.2.0", features = ["reqwest","async"] }
+home = "0.5.4"
+config = "0.13.3"
+eframe = { version = "0.21.3" }
+cron = "0.12.0"
+chrono = "0.4.23"
+directories-next = "2.0.0"
+serde_yaml = "0.9.17"
+serde = "1.0.152"
+eyre = "0.6.8"
 

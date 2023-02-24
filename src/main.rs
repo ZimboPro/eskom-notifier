@@ -1,17 +1,21 @@
 mod setup;
 mod traits;
-mod home;
+mod home_page;
+mod cache_handler;
 
 use std::ops::{Index, IndexMut};
 
-use eframe::{App, egui::{CentralPanel, Ui}};
+use cache_handler::load_file_and_deserialise;
+use directories_next::ProjectDirs;
+use eframe::{App, egui::{CentralPanel, Ui}, NativeOptions, run_native};
 // use eskom_se_push_api::
 use eskom_se_push_api::area_info::AreaInfo;
-use home::HomePage;
+use home_page::HomePage;
+use serde::{Deserialize, Serialize};
 use setup::Setup;
 use traits::Page;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum ActivePage {
     Home,
     Setup,
@@ -59,22 +63,38 @@ struct EskomApp {
     pages: Vec<Box<dyn Page>>,
 }
 
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
 pub struct StateData {
     ids: Vec<SelectedAreaInfo>,
     page: ActivePage,
     api_key: String,
 }
 
+const CONFIG_FILE: &str = "eskom-notifier.yaml";
+
 impl EskomApp{
-    pub fn new() -> Self {
-        Self {
+    pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
+        let mut app = Self {
             state: StateData::default(),
             pages: vec![
                 Box::new(HomePage::default()),
                 Box::new(Setup::default())
                 ],
+        };
+        app.read_cache();
+        app
+    }
+
+    pub fn read_cache(&mut self) {
+       if let Some(config) = ProjectDirs::from("io", "South Africa",  "Eskom Notifier") {
+        let t = config.config_dir().join(CONFIG_FILE);
+        if t.is_file() {
+            match load_file_and_deserialise(&t) {
+                Ok(state) => self.state = state,
+                Err(e) => eprintln!("Error getting configuration: {}", e),
+            }
         }
+       }
     }
 }
 
@@ -84,9 +104,13 @@ impl App for EskomApp {
             self.pages[self.state.page].page(ui, &mut self.state);
         });
     }
+
+    fn save(&mut self, _storage: &mut dyn eframe::Storage) {
+        
+    }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 struct SelectedAreaInfo {
     id: String,
     details: AreaInfo
@@ -94,5 +118,9 @@ struct SelectedAreaInfo {
 
 
 fn main() {
-    
+    let options = NativeOptions::default();
+    run_native(
+        "Eskom Notifier",
+        options,
+        Box::new(|cc| Box::new(EskomApp::new(cc))));
 }
