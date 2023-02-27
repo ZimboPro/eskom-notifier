@@ -8,14 +8,14 @@ use std::ops::{Index, IndexMut};
 use cache_handler::{load_file_and_deserialise, save_contents};
 use directories_next::ProjectDirs;
 use eframe::{
-  egui::{CentralPanel, Ui},
+  egui::{CentralPanel},
   run_native, App, NativeOptions,
 };
 // use eskom_se_push_api::
 use eskom_se_push_api::area_info::AreaInfo;
-use home_page::HomePage;
+
 use serde::{Deserialize, Serialize};
-use setup::Setup;
+
 use traits::Page;
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -32,11 +32,11 @@ impl Index<ActivePage> for Vec<Box<dyn Page>> {
 
   fn index(&self, index: ActivePage) -> &Self::Output {
     match index {
-      ActivePage::Home => &self.index(0),
-      ActivePage::Setup => &self.index(1),
-      ActivePage::FindArea => &self.index(2),
-      ActivePage::AreaDetails => &self.index(3),
-      ActivePage::Settings => &self.index(4),
+      ActivePage::Home => self.index(0),
+      ActivePage::Setup => self.index(1),
+      ActivePage::FindArea => self.index(2),
+      ActivePage::AreaDetails => self.index(3),
+      ActivePage::Settings => self.index(4),
     }
   }
 }
@@ -79,7 +79,7 @@ impl EskomApp {
   pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
     let mut app = Self {
       state: StateData::default(),
-      pages: vec![Box::new(HomePage::default()), Box::new(Setup::default())],
+      pages: vec![Box::<home_page::HomePage>::default(), Box::<setup::Setup>::default()],
     };
     app.read_cache();
     if app.state.api_key.is_empty() {
@@ -102,7 +102,7 @@ impl EskomApp {
 }
 
 impl App for EskomApp {
-  fn update(&mut self, ctx: &eframe::egui::Context, frame: &mut eframe::Frame) {
+  fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
     CentralPanel::default().show(ctx, |ui| {
       self.pages[self.state.page].page(ui, &mut self.state);
     });
