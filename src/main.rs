@@ -5,7 +5,7 @@ mod cache_handler;
 
 use std::ops::{Index, IndexMut};
 
-use cache_handler::load_file_and_deserialise;
+use cache_handler::{load_file_and_deserialise, save_contents};
 use directories_next::ProjectDirs;
 use eframe::{App, egui::{CentralPanel, Ui}, NativeOptions, run_native};
 // use eskom_se_push_api::
@@ -72,7 +72,7 @@ pub struct StateData {
 
 const CONFIG_FILE: &str = "eskom-notifier.yaml";
 
-impl EskomApp{
+impl EskomApp {
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         let mut app = Self {
             state: StateData::default(),
@@ -82,6 +82,9 @@ impl EskomApp{
                 ],
         };
         app.read_cache();
+        if app.state.api_key.is_empty() {
+            app.state.page = ActivePage::Setup
+        }
         app
     }
 
@@ -105,8 +108,13 @@ impl App for EskomApp {
         });
     }
 
-    fn save(&mut self, _storage: &mut dyn eframe::Storage) {
-        
+    fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
+        if let Some(config) = ProjectDirs::from("io", "South Africa",  "Eskom Notifier") {
+            let t = config.config_dir().join(CONFIG_FILE);
+            if let Err(e) = save_contents(&t, &self.state) {
+                eprintln!("Saving state error: {}", e)
+            }
+        }
     }
 }
 
@@ -119,8 +127,11 @@ struct SelectedAreaInfo {
 
 fn main() {
     let options = NativeOptions::default();
-    run_native(
+    match run_native(
         "Eskom Notifier",
         options,
-        Box::new(|cc| Box::new(EskomApp::new(cc))));
+        Box::new(|cc| Box::new(EskomApp::new(cc)))) {
+            Ok(_) => {},
+            Err(err) => eprintln!("Error: {}", err),
+        }
 }
