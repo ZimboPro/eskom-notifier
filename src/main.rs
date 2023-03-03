@@ -5,10 +5,11 @@ mod traits;
 mod find_area_page;
 mod area_details_page;
 mod settings_page;
+mod helpers;
 
 use std::ops::{Index, IndexMut};
 
-use cache_handler::{load_file_and_deserialise, save_contents};
+use cache_handler::{load_file_and_deserialise, save_contents, save_state, read_cache};
 use directories_next::ProjectDirs;
 use eframe::{
   egui::{CentralPanel},
@@ -17,7 +18,7 @@ use eframe::{
 // use eskom_se_push_api::
 use eskom_se_push_api::area_info::AreaInfo;
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 use traits::Page;
 
@@ -76,6 +77,12 @@ pub struct StateData {
   api_key: String,
 }
 
+impl StateData {
+  pub fn update_cache(&self) {
+    save_state(&self);
+  }
+}
+
 const CONFIG_FILE: &str = "eskom-notifier.yaml";
 
 impl EskomApp {
@@ -85,7 +92,7 @@ impl EskomApp {
       pages: vec![
         Box::<home_page::HomePage>::default(),
         Box::<setup::Setup>::default(),
-        Box::<find_area_page::FindAreaPage>::default(),
+        Box::new(find_area_page::FindAreaPage::new()),
         Box::<area_details_page::AreaDetailsPage>::default(),
         Box::<settings_page::SettingsPage>::default()
       ],
@@ -98,14 +105,9 @@ impl EskomApp {
   }
 
   pub fn read_cache(&mut self) {
-    if let Some(config) = ProjectDirs::from("io", "South Africa", "Eskom Notifier") {
-      let t = config.config_dir().join(CONFIG_FILE);
-      if t.is_file() {
-        match load_file_and_deserialise(&t) {
-          Ok(state) => self.state = state,
-          Err(e) => eprintln!("Error getting configuration: {}", e),
-        }
-      }
+    match read_cache() {
+      Ok(state) => self.state = state,
+      Err(e) => eprintln!("Error getting configuration: {}", e),
     }
   }
 }

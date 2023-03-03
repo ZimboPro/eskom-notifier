@@ -1,5 +1,6 @@
 use std::thread::{self, JoinHandle};
 
+use crate::helpers::map_error;
 use crate::traits::Page;
 use crate::{ActivePage, StateData};
 use eframe::epaint::Color32;
@@ -18,7 +19,7 @@ pub struct Setup {
 impl Page for Setup {
   fn page(&mut self, ui: &mut eframe::egui::Ui, state: &mut StateData) {
     ui.label("Welcome to the unofficial Eskom-Se-Push Notification Desktop App");
-    ui.label("This app will notify you before load sheeding starts in your area.");
+    ui.label("This app will notify you before load shedding starts in your area.");
     ui.label("However, there will be some limitations as follows:");
     ui.label("-> The notifications will not be live. It will check the status every 30 min at the very least.");
     ui.label("-> You will require an API key from Eskom-se-Push. The link is provided below.");
@@ -33,7 +34,6 @@ impl Page for Setup {
       if !self.testing && ui.button("Test").clicked() {
         self.error = None;
         self.testing = true;
-        // TODO test the API key
         let api_key = self.api_key.clone();
         self.thread = Some(thread::spawn(move || {
           let t = AllowanceCheckURLBuilder::default().build().unwrap();
@@ -61,28 +61,12 @@ impl Setup {
               Ok(_result) => {
                 state.page = ActivePage::Home;
                 state.api_key = self.api_key.clone();
+                state.update_cache();
                 self.api_key = String::new();
               }
               Err(err) => {
                 self.testing = false;
-                self.error = match err {
-                  HttpError::APIError(APIError::Forbidden) => {
-                    Some("The API key is invalid.".to_owned())
-                  }
-                  HttpError::Timeout => Some("The API call timed out.".to_owned()),
-                  HttpError::NoInternet => Some("No internet access.".to_owned()),
-                  HttpError::Unknown => Some("An error occurred".to_owned()),
-                  HttpError::ResponseError(_) => Some("An error occurred".to_owned()),
-                  HttpError::APIError(_) => Some("An error occurred.".to_owned()),
-                  HttpError::UreqResponseError(_) => Some("An error occurred".to_owned()),
-                  HttpError::SearchTextNotSet => Some("An error occurred".to_owned()),
-                  HttpError::AreaIdNotSet => Some("An error occurred".to_owned()),
-                  HttpError::LongitudeOrLatitudeNotSet {
-                    longitude: _,
-                    latitude: _,
-                  } => Some("An error occurred".to_owned()),
-                  HttpError::UnknownError(_) => Some("An error occurred".to_owned()),
-                };
+                self.error = map_error(err);
               }
             },
             Err(e) => {
