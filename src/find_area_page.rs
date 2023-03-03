@@ -74,10 +74,10 @@ impl Page for FindAreaPage {
                 .unwrap();
               match details.reqwest(&api_key) {
                 Ok(t) => {
-                  tx.send(crate::SelectedAreaInfo { id, details: t });
+                  let _ = tx.send(crate::SelectedAreaInfo { id, details: t });
                 }
                 Err(e) => {
-                  err_tx.send(e);
+                  let _ = err_tx.send(e);
                 }
               }
             });
