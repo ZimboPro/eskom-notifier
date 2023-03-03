@@ -62,7 +62,7 @@ impl Page for FindAreaPage {
         ui.horizontal_top(|ui| {
           ui.label(s.name.as_str());
           ui.label(s.region.as_str());
-          if state.ids.iter().position(|s| s.id == s.id).is_none()
+          if !state.ids.iter().any(|area| s.id == area.id)
             && ui.button("Add region").clicked()
           {
             self.count += 1;
