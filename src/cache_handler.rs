@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf, error::Error};
+use std::{error::Error, fs, path::PathBuf};
 
 use directories_next::ProjectDirs;
 use serde::{de::DeserializeOwned, ser};
@@ -20,7 +20,7 @@ pub fn save_contents<T: ?Sized + ser::Serialize>(path: &PathBuf, notify: &T) -> 
   Ok(())
 }
 
-pub fn save_state<T: ser::Serialize>(state: & T) {
+pub fn save_state<T: ser::Serialize>(state: &T) {
   if let Some(config) = ProjectDirs::from(QUALIFY_NAME, ORGANIZATION_NAME, APPLICATION) {
     let t = config.config_dir().join(CONFIG_FILE);
     if let Err(e) = save_contents(&t, &state) {

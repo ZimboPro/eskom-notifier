@@ -1,24 +1,21 @@
+mod area_details_page;
 mod cache_handler;
+mod find_area_page;
+mod helpers;
 mod home_page;
+mod settings_page;
 mod setup;
 mod traits;
-mod find_area_page;
-mod area_details_page;
-mod settings_page;
-mod helpers;
 
 use std::ops::{Index, IndexMut};
 
-use cache_handler::{load_file_and_deserialise, save_contents, save_state, read_cache};
+use cache_handler::{load_file_and_deserialise, read_cache, save_contents, save_state};
 use directories_next::ProjectDirs;
-use eframe::{
-  egui::{CentralPanel},
-  run_native, App, NativeOptions,
-};
+use eframe::{egui::CentralPanel, run_native, App, NativeOptions};
 // use eskom_se_push_api::
 use eskom_se_push_api::area_info::AreaInfo;
 
-use serde::{Deserialize, Serialize, de::DeserializeOwned};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use traits::Page;
 
@@ -94,7 +91,7 @@ impl EskomApp {
         Box::<setup::Setup>::default(),
         Box::new(find_area_page::FindAreaPage::new()),
         Box::<area_details_page::AreaDetailsPage>::default(),
-        Box::<settings_page::SettingsPage>::default()
+        Box::<settings_page::SettingsPage>::default(),
       ],
     };
     app.read_cache();
