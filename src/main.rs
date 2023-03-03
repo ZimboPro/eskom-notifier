@@ -2,6 +2,9 @@ mod cache_handler;
 mod home_page;
 mod setup;
 mod traits;
+mod find_area_page;
+mod area_details_page;
+mod settings_page;
 
 use std::ops::{Index, IndexMut};
 
@@ -79,7 +82,13 @@ impl EskomApp {
   pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
     let mut app = Self {
       state: StateData::default(),
-      pages: vec![Box::<home_page::HomePage>::default(), Box::<setup::Setup>::default()],
+      pages: vec![
+        Box::<home_page::HomePage>::default(),
+        Box::<setup::Setup>::default(),
+        Box::<find_area_page::FindAreaPage>::default(),
+        Box::<area_details_page::AreaDetailsPage>::default(),
+        Box::<settings_page::SettingsPage>::default()
+      ],
     };
     app.read_cache();
     if app.state.api_key.is_empty() {
