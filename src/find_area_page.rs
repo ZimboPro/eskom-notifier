@@ -5,9 +5,9 @@ use std::{
 
 use eframe::epaint::Color32;
 use eskom_se_push_api::{
-  area_info::{AreaInfo, AreaInfoURLBuilder},
+  area_info::{AreaInfoURLBuilder},
   area_search::{AreaSearch, AreaSearchURLBuilder},
-  errors::{APIError, HttpError},
+  errors::{HttpError},
   Endpoint,
 };
 
@@ -74,7 +74,7 @@ impl Page for FindAreaPage {
                 .unwrap();
               match details.reqwest(&api_key) {
                 Ok(t) => {
-                  tx.send(crate::SelectedAreaInfo { id: id, details: t });
+                  tx.send(crate::SelectedAreaInfo { id, details: t });
                 }
                 Err(e) => {
                   err_tx.send(e);

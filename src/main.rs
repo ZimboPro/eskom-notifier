@@ -9,13 +9,13 @@ mod traits;
 
 use std::ops::{Index, IndexMut};
 
-use cache_handler::{load_file_and_deserialise, read_cache, save_contents, save_state};
+use cache_handler::{read_cache, save_contents, save_state};
 use directories_next::ProjectDirs;
 use eframe::{egui::CentralPanel, run_native, App, NativeOptions};
 // use eskom_se_push_api::
 use eskom_se_push_api::area_info::AreaInfo;
 
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 
 use traits::Page;
 

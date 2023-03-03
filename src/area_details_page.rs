@@ -4,7 +4,7 @@ use crate::traits::Page;
 pub struct AreaDetailsPage {}
 
 impl Page for AreaDetailsPage {
-  fn page(&mut self, ui: &mut eframe::egui::Ui, state: &mut crate::StateData) {
+  fn page(&mut self, ui: &mut eframe::egui::Ui, _state: &mut crate::StateData) {
     ui.label("Area Details");
   }
 }

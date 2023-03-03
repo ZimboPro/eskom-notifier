@@ -4,7 +4,7 @@ use crate::traits::Page;
 pub struct SettingsPage {}
 
 impl Page for SettingsPage {
-  fn page(&mut self, ui: &mut eframe::egui::Ui, state: &mut crate::StateData) {
+  fn page(&mut self, ui: &mut eframe::egui::Ui, _state: &mut crate::StateData) {
     ui.label("Settings");
   }
 }

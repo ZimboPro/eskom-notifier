@@ -5,7 +5,7 @@ use crate::traits::Page;
 use crate::{ActivePage, StateData};
 use eframe::epaint::Color32;
 use eskom_se_push_api::allowance::{AllowanceCheck, AllowanceCheckURLBuilder};
-use eskom_se_push_api::errors::{APIError, HttpError};
+use eskom_se_push_api::errors::{HttpError};
 use eskom_se_push_api::Endpoint;
 
 #[derive(Debug, Default)]

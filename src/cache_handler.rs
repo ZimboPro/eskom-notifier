@@ -1,13 +1,13 @@
-use std::{error::Error, fs, path::PathBuf};
+use std::{fs, path::PathBuf};
 
 use directories_next::ProjectDirs;
 use serde::{de::DeserializeOwned, ser};
 
 use crate::CONFIG_FILE;
 
-const QUALIFY_NAME: &'static str = "io";
-const ORGANIZATION_NAME: &'static str = "South Africa";
-const APPLICATION: &'static str = "Eskom Notifier";
+const QUALIFY_NAME: &str = "io";
+const ORGANIZATION_NAME: &str = "South Africa";
+const APPLICATION: &str = "Eskom Notifier";
 
 pub fn load_file_and_deserialise<T: DeserializeOwned>(path: &PathBuf) -> eyre::Result<T> {
   let config_content = fs::read_to_string(path)?;
@@ -32,5 +32,5 @@ pub fn save_state<T: ser::Serialize>(state: &T) {
 pub fn read_cache<T: DeserializeOwned>() -> eyre::Result<T> {
   let p = ProjectDirs::from(QUALIFY_NAME, ORGANIZATION_NAME, APPLICATION).unwrap();
   let t = p.config_dir().join(CONFIG_FILE);
-  return load_file_and_deserialise(&t);
+  load_file_and_deserialise(&t)
 }
