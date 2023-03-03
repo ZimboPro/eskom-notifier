@@ -6,6 +6,7 @@ mod home_page;
 mod settings_page;
 mod setup;
 mod traits;
+mod layouts;
 
 use std::ops::{Index, IndexMut};
 
@@ -19,7 +20,7 @@ use serde::{Deserialize, Serialize};
 
 use traits::Page;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ActivePage {
   Home,
   Setup,

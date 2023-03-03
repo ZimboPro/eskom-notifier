@@ -11,7 +11,7 @@ use eskom_se_push_api::{
   Endpoint,
 };
 
-use crate::{helpers::map_error, traits::Page, ActivePage, StateData};
+use crate::{helpers::map_error, traits::Page, ActivePage, StateData, layouts::top::top_bar};
 
 #[derive(Debug)]
 pub struct FindAreaPage {
@@ -30,6 +30,7 @@ pub struct FindAreaPage {
 
 impl Page for FindAreaPage {
   fn page(&mut self, ui: &mut eframe::egui::Ui, state: &mut crate::StateData) {
+    top_bar(ui, state, self.count != 0);
     self.check_recievers(state);
     ui.label("Find Area");
     ui.text_edit_singleline(&mut self.search_term);
