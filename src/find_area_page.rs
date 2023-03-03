@@ -62,7 +62,7 @@ impl Page for FindAreaPage {
         ui.horizontal_top(|ui| {
           ui.label(s.name.as_str());
           ui.label(s.region.as_str());
-          if ui.button("Add region").clicked() {
+          if state.ids.iter().position(|s| s.id == s.id).is_none() && ui.button("Add region").clicked() {
             self.count += 1;
             let tx = self.tx.clone();
             let err_tx = self.err_tx.clone();
@@ -104,6 +104,7 @@ impl FindAreaPage {
           match t {
             Ok(resp) => match resp {
               Ok(result) => {
+                self.testing = false;
                 self.area_search = Some(result);
               }
               Err(err) => {
@@ -144,10 +145,12 @@ impl FindAreaPage {
 
   fn check_recievers(&mut self, state: &mut StateData) {
     if let Ok(area) = self.rx.try_recv() {
-      state.ids.push(area)
+      state.ids.push(area);
+      self.count -= 1;
     }
     if let Ok(err) = self.err_rx.try_recv() {
       self.error_adding.push(map_error(err).unwrap());
+      self.count -= 1;
     }
   }
 }

@@ -1,3 +1,5 @@
+use eframe::egui::Sense;
+
 use crate::{traits::Page, ActivePage, StateData, layouts::top::top_bar};
 
 #[derive(Debug, Default)]
@@ -8,8 +10,13 @@ impl Page for HomePage {
     top_bar(ui, state, false);
     ui.label("HomePage");
     if !state.ids.is_empty() {
-      state.ids.iter().for_each(|id| {
-        ui.label(id.details.info.name.clone());
+      state.ids.iter().for_each(|area| {
+        let r = ui.label(area.details.info.name.clone());
+        let r = ui.interact(r.rect, r.id, Sense::click());
+        if r.clicked() {
+          println!("Clicked");
+          state.page = ActivePage::AreaDetails(area.id.clone());
+        }
       });
     }
     if ui.button("Add Region").clicked() {

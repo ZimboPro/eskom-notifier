@@ -16,6 +16,9 @@ pub fn load_file_and_deserialise<T: DeserializeOwned>(path: &PathBuf) -> eyre::R
 }
 
 pub fn save_contents<T: ?Sized + ser::Serialize>(path: &PathBuf, notify: &T) -> eyre::Result<()> {
+  if !path.exists() {
+    fs::create_dir_all(path.parent().unwrap())?;
+  }
   fs::write(path, serde_yaml::to_string(notify)?)?;
   Ok(())
 }

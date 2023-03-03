@@ -13,19 +13,18 @@ use std::ops::{Index, IndexMut};
 use cache_handler::{read_cache, save_contents, save_state};
 use directories_next::ProjectDirs;
 use eframe::{egui::CentralPanel, run_native, App, NativeOptions};
-// use eskom_se_push_api::
 use eskom_se_push_api::area_info::AreaInfo;
 
 use serde::{Deserialize, Serialize};
 
 use traits::Page;
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ActivePage {
   Home,
   Setup,
   FindArea,
-  AreaDetails,
+  AreaDetails(String),
   Settings,
 }
 
@@ -37,7 +36,7 @@ impl Index<ActivePage> for Vec<Box<dyn Page>> {
       ActivePage::Home => self.index(0),
       ActivePage::Setup => self.index(1),
       ActivePage::FindArea => self.index(2),
-      ActivePage::AreaDetails => self.index(3),
+      ActivePage::AreaDetails(_) => self.index(3),
       ActivePage::Settings => self.index(4),
     }
   }
@@ -49,7 +48,7 @@ impl IndexMut<ActivePage> for Vec<Box<dyn Page>> {
       ActivePage::Home => self.index_mut(0),
       ActivePage::Setup => self.index_mut(1),
       ActivePage::FindArea => self.index_mut(2),
-      ActivePage::AreaDetails => self.index_mut(3),
+      ActivePage::AreaDetails(_) => self.index_mut(3),
       ActivePage::Settings => self.index_mut(4),
     }
   }
@@ -113,13 +112,14 @@ impl EskomApp {
 impl App for EskomApp {
   fn update(&mut self, ctx: &eframe::egui::Context, _frame: &mut eframe::Frame) {
     CentralPanel::default().show(ctx, |ui| {
-      self.pages[self.state.page].page(ui, &mut self.state);
+      self.pages[self.state.page.clone()].page(ui, &mut self.state);
     });
   }
 
   fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
     if let Some(config) = ProjectDirs::from("io", "South Africa", "Eskom Notifier") {
       let t = config.config_dir().join(CONFIG_FILE);
+      self.state.page = ActivePage::Home;
       if let Err(e) = save_contents(&t, &self.state) {
         eprintln!("Saving state error: {}", e)
       }
