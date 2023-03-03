@@ -5,13 +5,13 @@ use std::{
 
 use eframe::epaint::Color32;
 use eskom_se_push_api::{
-  area_info::{AreaInfoURLBuilder},
+  area_info::AreaInfoURLBuilder,
   area_search::{AreaSearch, AreaSearchURLBuilder},
-  errors::{HttpError},
+  errors::HttpError,
   Endpoint,
 };
 
-use crate::{helpers::map_error, traits::Page, ActivePage, StateData, layouts::top::top_bar};
+use crate::{helpers::map_error, layouts::top::top_bar, traits::Page, ActivePage, StateData};
 
 #[derive(Debug)]
 pub struct FindAreaPage {
@@ -62,7 +62,9 @@ impl Page for FindAreaPage {
         ui.horizontal_top(|ui| {
           ui.label(s.name.as_str());
           ui.label(s.region.as_str());
-          if state.ids.iter().position(|s| s.id == s.id).is_none() && ui.button("Add region").clicked() {
+          if state.ids.iter().position(|s| s.id == s.id).is_none()
+            && ui.button("Add region").clicked()
+          {
             self.count += 1;
             let tx = self.tx.clone();
             let err_tx = self.err_tx.clone();

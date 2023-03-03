@@ -3,10 +3,10 @@ mod cache_handler;
 mod find_area_page;
 mod helpers;
 mod home_page;
+mod layouts;
 mod settings_page;
 mod setup;
 mod traits;
-mod layouts;
 
 use std::ops::{Index, IndexMut};
 

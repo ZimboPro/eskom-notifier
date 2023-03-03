@@ -1,6 +1,6 @@
 use eframe::egui::Sense;
 
-use crate::{traits::Page, ActivePage, StateData, layouts::top::top_bar};
+use crate::{layouts::top::top_bar, traits::Page, ActivePage, StateData};
 
 #[derive(Debug, Default)]
 pub struct HomePage {}
