@@ -7,6 +7,7 @@ mod layouts;
 mod settings_page;
 mod setup;
 mod traits;
+mod updating_page;
 
 use std::ops::{Index, IndexMut};
 
@@ -18,6 +19,7 @@ use eskom_se_push_api::area_info::AreaInfo;
 use serde::{Deserialize, Serialize};
 
 use traits::Page;
+use updating_page::UpdatingPage;
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum ActivePage {
@@ -26,6 +28,7 @@ pub enum ActivePage {
   FindArea,
   AreaDetails(String),
   Settings,
+  Updating(String)
 }
 
 impl Index<ActivePage> for Vec<Box<dyn Page>> {
@@ -38,6 +41,7 @@ impl Index<ActivePage> for Vec<Box<dyn Page>> {
       ActivePage::FindArea => self.index(2),
       ActivePage::AreaDetails(_) => self.index(3),
       ActivePage::Settings => self.index(4),
+      ActivePage::Updating(_) => self.index(5),
     }
   }
 }
@@ -50,6 +54,7 @@ impl IndexMut<ActivePage> for Vec<Box<dyn Page>> {
       ActivePage::FindArea => self.index_mut(2),
       ActivePage::AreaDetails(_) => self.index_mut(3),
       ActivePage::Settings => self.index_mut(4),
+      ActivePage::Updating(_) => self.index_mut(5),
     }
   }
 }
@@ -84,6 +89,8 @@ const CONFIG_FILE: &str = "eskom-notifier.yaml";
 
 impl EskomApp {
   pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
+    // let mut style = (*_cc.egui_ctx.style()).clone();
+    // style.visuals.
     let mut app = Self {
       state: StateData::default(),
       pages: vec![
@@ -92,6 +99,7 @@ impl EskomApp {
         Box::new(find_area_page::FindAreaPage::new()),
         Box::<area_details_page::AreaDetailsPage>::default(),
         Box::<settings_page::SettingsPage>::default(),
+        Box::<UpdatingPage>::default(),
       ],
     };
     app.read_cache();
@@ -144,3 +152,16 @@ fn main() {
     Err(err) => eprintln!("Error: {}", err),
   }
 }
+
+// TODOS
+// TODO update area info based on date of last set of data
+// TODO customise update cycle?
+// TODO update cycle based on account type
+// TODO set and custom notifications
+// TODO Styling
+// TODO Font
+// TODO Github page
+// TODO Documentation
+// TODO automated dist cycle
+// TODO notification on stage change
+// TODO notification on stage schedule change

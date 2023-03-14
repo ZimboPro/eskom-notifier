@@ -23,32 +23,35 @@ impl Page for AreaDetailsPage {
             ui.horizontal(|ui| {
               for s in &details.details.events {
                 ui.vertical(|ui| {
+                  let t =  chrono::DateTime::parse_from_rfc3339(&s.start).unwrap();
+                  let t = chrono_humanize::HumanTime::from(t);
                   ui.label(s.note.as_str());
-                  ui.label(s.start.as_str());
+                  ui.label(t.to_string());
                   ui.label(s.end.as_str());
                 });
               }
             });
           });
-        ScrollArea::vertical().show(ui, |ui| {
-          for stage in &details.details.schedule.days {
-            ui.label(stage.name.as_str());
-            ui.label(stage.date.as_str());
-            ui.horizontal(|ui| {
-              for (ind, s) in stage.stages.iter().enumerate() {
-                ui.vertical(|ui| {
-                  ui.label(format!("Stage {}", ind + 1));
-                  for i in s {
-                    ui.label(i.as_str());
-                  }
-                });
-              }
-            });
-          }
-        });
+        // ScrollArea::vertical().show(ui, |ui| {
+        //   for stage in &details.details.schedule.days {
+        //     ui.label(stage.name.as_str());
+        //     ui.label(stage.date.as_str());
+        //     ui.horizontal(|ui| {
+        //       for (ind, s) in stage.stages.iter().enumerate() {
+        //         ui.vertical(|ui| {
+        //           ui.label(format!("Stage {}", ind + 1));
+        //           for i in s {
+        //             ui.label(i.as_str());
+        //           }
+        //         });
+        //       }
+        //     });
+        //   }
+        // });
       }
     } else {
       state.page = ActivePage::Home;
+      self.details = None;
     }
   }
 }

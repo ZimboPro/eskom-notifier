@@ -88,6 +88,8 @@ impl Page for FindAreaPage {
         });
       });
     }
+    // TODO text why not auto updating search area
+    // dependent on account type
     ui.add_enabled_ui(self.count == 0, |ui| {
       if ui.button("Done").clicked() {
         state.page = ActivePage::Home;
