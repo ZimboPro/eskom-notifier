@@ -1,0 +1,18 @@
+[package]
+name = "eskom-notifier-v1"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# eskom_se_push-api = { version = "0.2.0", features = ["async", "reqwest"], default-features = false }
+eskom_se_push-api = { version = "0.2.0" }
+notify-rust = "4.8.0"
+anyhow = "1.0.71"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
+ctrlc = { version = "3", features = ["termination"] }
+chrono = "0.4.24" # Has serde feature
+cron = "0.12.0"
+inquire = "0.6.2"
